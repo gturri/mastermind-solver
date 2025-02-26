@@ -54,4 +54,13 @@ public class Combination(Token token1, Token token2, Token token3, Token token4)
     }
 
     public override string ToString() => "[" + string.Join(", ", _tokens.Select(t => Enum.GetName(typeof(Token), t))) + "]";
+
+    public override bool Equals(object? obj) => this.Equals(obj as Combination);
+
+    public bool Equals(Combination? other) => other != null && _tokens.SequenceEqual(other._tokens);
+
+    public override int GetHashCode()
+    {
+        return (int) token1 + 6 * ((int) token2 + 6 * ((int) token3 + 6 * (int) token4));
+    }
 }

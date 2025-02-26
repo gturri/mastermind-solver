@@ -37,5 +37,19 @@ namespace mastermind_solver_tests
             Assert.That(!notCandidate.IsCandidateSolution(playedCombination));
 
         }
+
+        [Test]
+        public void TestAreEquals()
+        {
+            Assert.That(new Combination(Token.BLACK, Token.BLUE, Token.BLUE, Token.GREEN),
+                Is.EqualTo(new Combination(Token.BLACK, Token.BLUE, Token.BLUE, Token.GREEN)));
+        }
+
+        [Test]
+        public void TestAreNotEquals()
+        {
+            Assert.That(new Combination(Token.BLACK, Token.BLUE, Token.BLUE, Token.GREEN),
+                Is.Not.EqualTo(new Combination(Token.BLUE, Token.BLUE, Token.BLUE, Token.GREEN)));
+        }
     }
 }
