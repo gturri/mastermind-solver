@@ -7,11 +7,10 @@ Play();
 void Play()
 {
     var stillPlaying = true;
-    var solver = new Solver();
     var playedCombinations = new List<PlayedCombination>();
     while (stillPlaying)
     {
-        var candidate = solver.FindCandidate(playedCombinations);
+        var candidate = new Solver().FindCandidate(playedCombinations);
         Console.WriteLine(
             $"Candidate: {candidate} (expected intput: \"nbAtTheCorrectPosition nbGoodColorAtInCorrectPosition\"");
         string? read = null;
@@ -35,4 +34,29 @@ void Play()
     }
 
     Console.WriteLine("DONE");
+}
+
+// TODO: put the following method in a better location
+void FindAndPrintLongestToFindCombination()
+{
+    var hardestTuple = Solver.EnumeratesAllCombinations().Select(c => (c, ComputeNbIterationsToSolve(c))).MaxBy(t => t.Item2);
+    Console.WriteLine($"Hardest combination to find: {hardestTuple.Item1}. Requires {hardestTuple.Item2} iterations");
+}
+
+int ComputeNbIterationsToSolve(Combination solution)
+{
+    var nbIterations = 0;
+    var playedCombinations = new List<PlayedCombination>();
+
+    while (true)
+    {
+        nbIterations++;
+        var candidate = new Solver(false).FindCandidate(playedCombinations);
+        var result = candidate.ComputeResult(solution);
+        if (result.NbAtGoodPosition == 4)
+        {
+            return nbIterations;
+        }
+        playedCombinations.Add(new PlayedCombination(candidate, result));
+    }
 }

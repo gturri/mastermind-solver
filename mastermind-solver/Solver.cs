@@ -1,12 +1,18 @@
 ﻿namespace mastermind_solver;
 
-internal class Solver
+internal class Solver(bool verbose = true)
 {
     public Combination FindCandidate(IEnumerable<PlayedCombination> playedCombinations)
     {
         // It would be cheaper to stop at the first candidate, but I'm interested in the number of candidate left, and it's still pretty cheap anyway
-        var candidates = EnumeratesAllCombinations().Where(c => c.IsCandidateSolution(playedCombinations)).ToArray();
-        Console.WriteLine($"Still {candidates.Length} candidates");
+        var candidates = EnumeratesAllCombinations()
+            .Where(c => c.IsCandidateSolution(playedCombinations))
+            .ToArray();
+        if (verbose)
+        {
+            Console.WriteLine($"Still {candidates.Length} candidates");
+        }
+
         if (candidates.Length == 0)
         {
             throw new Exception("No candidate found");
@@ -15,7 +21,7 @@ internal class Solver
         return candidates[0];
     }
 
-    private IEnumerable<Combination> EnumeratesAllCombinations()
+    public static IEnumerable<Combination> EnumeratesAllCombinations()
     {
         for (var token1=Token.BLACK; token1 <= Token.BLUE; token1++)
         for (var token2=Token.BLACK; token2 <= Token.BLUE; token2++)
@@ -23,7 +29,6 @@ internal class Solver
         for (var token4=Token.BLACK; token4 <= Token.BLUE; token4++)
             yield return new Combination(token1, token2, token3, token4);
     }
-
 }
 
 public enum Token
