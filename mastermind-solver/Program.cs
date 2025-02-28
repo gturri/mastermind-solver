@@ -14,7 +14,7 @@ void Play()
     {
         var candidate = new DirectSolver().ComputeNextGuess(playedCombinations);
         Console.WriteLine(
-            $"Candidate: {candidate} (expected intput: \"nbAtTheCorrectPosition nbGoodColorAtInCorrectPosition\"");
+            $"Candidate: {candidate} (expected input: \"nbAtTheCorrectPosition nbGoodColorAtInCorrectPosition\"");
         string? read = null;
         while (read == null || read.Trim() == "")
         {
