@@ -2,7 +2,7 @@
 
 internal class MinMaxSolver(bool verbose): Solver {
 
-    public override Combination ComputeNextGuess(IEnumerable<PlayedCombination> playedCombinations)
+    public override Combination ComputeNextGuess(List<PlayedCombination> playedCombinations)
     {
         var candidates = AllCombinations
             .Where(c => c.IsCandidateSolution(playedCombinations))

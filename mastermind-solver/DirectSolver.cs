@@ -2,7 +2,7 @@
 
 internal class DirectSolver(bool verbose=true) : Solver
 {
-    public override Combination ComputeNextGuess(IEnumerable<PlayedCombination> playedCombinations)
+    public override Combination ComputeNextGuess(List<PlayedCombination> playedCombinations)
     {
         // It would be cheaper to stop at the first candidate, but I'm interested in the number of candidate left, and it's still pretty cheap anyway
         var candidates = AllCombinations

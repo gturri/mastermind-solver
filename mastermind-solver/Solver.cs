@@ -16,6 +16,5 @@ internal abstract class Solver
         return result.ToArray();
     }
 
-    public abstract Combination ComputeNextGuess(IEnumerable<PlayedCombination> playedCombinations);
-
+    public abstract Combination ComputeNextGuess(List<PlayedCombination> playedCombinations);
 }
