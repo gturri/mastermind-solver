@@ -6,9 +6,29 @@ public class Combination(Token token1, Token token2, Token token3, Token token4)
 
     public CombinationResult ComputeResult(Combination model)
     {
+        var hasCacheForThis = _cache.TryGetValue(this, out var cacheForThis);
+        if (hasCacheForThis)
+        {
+            if (cacheForThis.TryGetValue(model, out var cachedResult))
+            {
+                return cachedResult;
+            }
+        }
+
         var nbAtGoodPosition = ComputeNbSameColorsAtSamePosition(model);
         var nbGoodColorOverall = ComputeNbSameColors(model);
-        return new CombinationResult(nbAtGoodPosition: nbAtGoodPosition, nbGoodColorAtBadPosition: nbGoodColorOverall - nbAtGoodPosition);
+        var result = new CombinationResult(nbAtGoodPosition: nbAtGoodPosition, nbGoodColorAtBadPosition: nbGoodColorOverall - nbAtGoodPosition);
+
+        if (hasCacheForThis)
+        {
+            cacheForThis.Add(model, result);
+        }
+        else
+        {
+            _cache.Add(this, new Dictionary<Combination, CombinationResult> { { model, result } });
+        }
+
+        return result;
     }
 
     public bool IsCandidateSolution(IEnumerable<PlayedCombination> playedCombinations)
@@ -16,6 +36,7 @@ public class Combination(Token token1, Token token2, Token token3, Token token4)
         return playedCombinations.All(playedCombination => playedCombination.Result.Equals(ComputeResult(playedCombination.Combination)));
     }
 
+    private static readonly Dictionary<Combination, Dictionary<Combination, CombinationResult>> _cache = new();
 
     private int ComputeNbSameColorsAtSamePosition(Combination other)
     {
