@@ -12,11 +12,11 @@ internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSol
         var possibleSolutions = AllCombinations
                 .Where(c => c.IsCandidateSolution(playedCombinations))
                 .ToArray();
-        if (possibleSolutions.Length == 1)
+        if (possibleSolutions.Length == 0)
         {
-            Console.WriteLine("That's the last possible combination");
-            return possibleSolutions[0];
+            throw new Exception("No candidate found");
         }
+
 
         var candidates = AllCombinations;
         if (allowGuessKnownToNotBeTheSolution)
@@ -24,11 +24,6 @@ internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSol
             candidates = candidates
                 .Where(c => c.IsCandidateSolution(playedCombinations))
                 .ToArray();
-        }
-
-        if (candidates.Length == 0)
-        {
-            throw new Exception("No candidate found");
         }
 
         var originalPlayedCombinations = new List<PlayedCombination>(playedCombinations);
@@ -55,7 +50,7 @@ internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSol
         foreach (var result in possibleResults)
         {
             var nextPlayedCombinations = new List<PlayedCombination>(playedCombinations) { new(consideredCandidate, result) };
-            var nbRemainingCandidatesNextTurn = remainingCandidatesSoFar.Count(c => c.IsCandidateSolution(nextPlayedCombinations));
+            var nbRemainingCandidatesNextTurn = remainingCandidatesSoFar.Count(c => !c.Equals(consideredCandidate) && c.IsCandidateSolution(nextPlayedCombinations));
             worstCase = Math.Max(worstCase, nbRemainingCandidatesNextTurn);
         }
 
