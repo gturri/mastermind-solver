@@ -1,6 +1,8 @@
 ﻿using mastermind_solver;
+using System.Diagnostics;
 
-Play();
+//Play();
+FindAndPrintLongestToFindCombination();
 
 
 
@@ -39,7 +41,12 @@ void Play()
 // TODO: put the following method in a better location
 void FindAndPrintLongestToFindCombination()
 {
-    var hardestTuple = Solver.EnumeratesAllCombinations().Select(c => (c, ComputeNbIterationsToSolve(c))).MaxBy(t => t.Item2);
+    var stopwatch = new Stopwatch();
+    stopwatch.Start();
+    var hardestTuple = Solver.AllCombinations.Select(c => (c, ComputeNbIterationsToSolve(c))).MaxBy(t => t.Item2);
+    stopwatch.Stop();
+
+    Console.WriteLine("Took: " + stopwatch.ElapsedMilliseconds + "ms");
     Console.WriteLine($"Hardest combination to find: {hardestTuple.Item1}. Requires {hardestTuple.Item2} iterations");
 }
 
