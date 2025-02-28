@@ -12,7 +12,7 @@ void Play()
     var playedCombinations = new List<PlayedCombination>();
     while (stillPlaying)
     {
-        var candidate = new Solver().FindCandidate(playedCombinations);
+        var candidate = new DirectSolver().ComputeNextGuess(playedCombinations);
         Console.WriteLine(
             $"Candidate: {candidate} (expected intput: \"nbAtTheCorrectPosition nbGoodColorAtInCorrectPosition\"");
         string? read = null;
@@ -58,7 +58,7 @@ int ComputeNbIterationsToSolve(Combination solution)
     while (true)
     {
         nbIterations++;
-        var candidate = new Solver(false).FindCandidate(playedCombinations);
+        var candidate = new DirectSolver(false).ComputeNextGuess(playedCombinations);
         var result = candidate.ComputeResult(solution);
         if (result.NbAtGoodPosition == 4)
         {
