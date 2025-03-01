@@ -19,7 +19,7 @@ internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSol
 
 
         var candidates = AllCombinations;
-        if (allowGuessKnownToNotBeTheSolution)
+        if (!allowGuessKnownToNotBeTheSolution)
         {
             candidates = candidates
                 .Where(c => c.IsCandidateSolution(playedCombinations))
