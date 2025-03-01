@@ -1,5 +1,16 @@
 ﻿namespace mastermind_solver;
 
+/**
+ * Solver which makes a guess that will minimize the number of possible solutions for the next iteration.
+ * <param name="allowGuessKnownToNotBeTheSolution">If set to FALSE then each guess is a possible solution. This reduces a bit the time to compute the next guess, but in the worst case
+ * some solutions (54 of them) will require up to 6 guesses. Though the average number of guesses is 4.50.
+ * If set to TRUE then some guesses will be known to not be a possible solution. This increases a bit the time to compute the next guess, but in the worst case it can only take up to 5
+ * guesses to find the solution. Though the average number of guesses is 4.76
+ * </param>
+ * <param name="usePrecomputations">Should be left to TRUE in order to take the first guesses from a cache -which speeds up a lot this solver. (The only good reason to set it to FALSE)
+ * is to force the re-computation of those guesses, in order to check the content of this cache.
+ * </param>
+ */
 internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSolution=false, bool usePrecomputations=true): Solver {
 
     public override Combination ComputeNextGuess(List<PlayedCombination> playedCombinations)
