@@ -1,13 +1,12 @@
 ﻿namespace mastermind_solver;
 
-internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSolution=false): Solver {
+internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSolution=false, bool usePrecomputations=true): Solver {
 
     public override Combination ComputeNextGuess(List<PlayedCombination> playedCombinations)
     {
-        if (playedCombinations.Count == 0)
+        if (TryGetPrecomputedGuess(playedCombinations, out var precomputedGuess))
         {
-            // That solver is pretty slow, especially for the first guess. And the first guess is always the same anyway, so let's return it hardcoded instead of wasting CPU cycles.
-            return new Combination(Token.BLACK, Token.BLACK, Token.WHITE, Token.WHITE);
+            return precomputedGuess;
         }
         var possibleSolutions = AllCombinations
                 .Where(c => c.IsCandidateSolution(playedCombinations))
@@ -38,6 +37,98 @@ internal class MinMaxSolver(bool verbose=true, bool allowGuessKnownToNotBeTheSol
         }
 
         return nextGuess.Item1;
+    }
+
+    private static readonly Combination _placeholderCombination = new(Token.BLACK, Token.BLACK, Token.BLACK, Token.BLACK);
+    // TODO: this should probably be replaced with a lookup in a some maps
+    private bool TryGetPrecomputedGuess(List<PlayedCombination> playedCombinations, out Combination precomputedGuess)
+    {
+        precomputedGuess = _placeholderCombination;
+        if (!usePrecomputations || playedCombinations.Count > 1)
+        {
+            return false;
+
+        }
+        if (playedCombinations.Count == 0)
+        {
+            precomputedGuess = new Combination(Token.BLACK, Token.BLACK, Token.WHITE, Token.WHITE);
+            return true;
+        }
+
+        // Below playedCombinations.Count == 1
+        var result = playedCombinations[0].Result;
+        if (result.NbAtGoodPosition == 0)
+        {
+            switch (result.NbGoodColorAtBadPosition)
+            {
+                case 0:
+                    precomputedGuess = new Combination(Token.RED, Token.RED, Token.YELLOW, Token.GREEN);
+                    return true;
+                case 1:
+                    precomputedGuess = new Combination(Token.WHITE, Token.RED, Token.YELLOW, Token.YELLOW);
+                    return true;
+                case 2:
+                    precomputedGuess = allowGuessKnownToNotBeTheSolution ? new Combination(Token.WHITE, Token.RED, Token.YELLOW, Token.YELLOW) : new Combination(Token.WHITE, Token.RED, Token.BLACK, Token.YELLOW);
+                    return true;
+                case 3:
+                    precomputedGuess = allowGuessKnownToNotBeTheSolution ? new Combination(Token.BLACK, Token.WHITE, Token.BLACK, Token.RED) : new Combination(Token.WHITE, Token.WHITE, Token.BLACK, Token.RED);
+                    return true;
+                case 4:
+                    precomputedGuess = new Combination(Token.WHITE, Token.WHITE, Token.BLACK, Token.BLACK);
+                    return true;
+            }
+        }
+
+        if (result.NbAtGoodPosition == 1)
+        {
+            switch (result.NbGoodColorAtBadPosition)
+            {
+                case 0:
+                    precomputedGuess = new Combination(Token.BLACK, Token.RED, Token.YELLOW, Token.YELLOW);
+                    return true;
+                case 1:
+                    precomputedGuess = allowGuessKnownToNotBeTheSolution ? new Combination(Token.BLACK, Token.BLACK, Token.RED, Token.YELLOW) : new Combination(Token.BLACK, Token.RED, Token.BLACK, Token.YELLOW);
+                    return true;
+                case 2:
+                    precomputedGuess = new Combination(Token.BLACK, Token.WHITE, Token.BLACK, Token.RED);
+                    return true;
+                case 3:
+                    return false;
+            }
+        }
+
+        if (result.NbAtGoodPosition == 2)
+        {
+            switch (result.NbGoodColorAtBadPosition)
+            {
+                case 0:
+                    precomputedGuess = allowGuessKnownToNotBeTheSolution ? new Combination(Token.BLACK, Token.WHITE, Token.RED, Token.YELLOW) : new Combination(Token.BLACK, Token.BLACK, Token.RED, Token.YELLOW);
+                    return true;
+                case 1:
+                    precomputedGuess = new Combination(Token.BLACK, Token.WHITE, Token.WHITE, Token.RED);
+                    return true;
+                case 2:
+                    precomputedGuess = allowGuessKnownToNotBeTheSolution ? new Combination(Token.BLACK, Token.WHITE, Token.BLACK, Token.RED) : new Combination(Token.BLACK, Token.WHITE, Token.BLACK, Token.WHITE);
+                    return true;
+            }
+        }
+
+        if (result.NbAtGoodPosition == 3)
+        {
+            switch (result.NbGoodColorAtBadPosition)
+            {
+                case 0:
+                    precomputedGuess = allowGuessKnownToNotBeTheSolution ? new Combination(Token.BLACK, Token.WHITE, Token.WHITE, Token.RED) : new Combination(Token.BLACK, Token.BLACK, Token.WHITE, Token.RED);
+                    return true;
+                case 1:
+                    return false;
+            }
+        }
+
+
+        // Should never occur.
+        return false;
+
     }
 
     // remainingCandidatesSoFar could be deduced from playedCombinations, but since this method is meant to be used in a loop, we take it as a parameter so it does not need to be
